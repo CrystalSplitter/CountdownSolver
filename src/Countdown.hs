@@ -3,6 +3,7 @@ module Countdown
   , Component
   , countdown
   , countdownFmt
+  , countdownInfixFmt
   )
 where
 
@@ -14,6 +15,12 @@ data CountdownOp = CDPlus | CDMinus | CDMultiply | CDDivide deriving (Show)
 data Component = Component { operator :: CountdownOp, value :: Int } deriving (Show)
 newtype Tree = Node (Either Bool [(Component, Tree)]) deriving (Show)
 
+
+precedence :: CountdownOp -> Int
+precedence CDPlus     = 1
+precedence CDMinus    = 1
+precedence CDMultiply = 2
+precedence CDDivide   = 2
 
 applyOp :: Int -> Component -> Maybe Int
 applyOp cur (Component CDPlus     n) = Just $ cur + n
@@ -29,8 +36,7 @@ getValidApplications _ [] = []
 getValidApplications cur nums =
   let ops        = [CDPlus, CDMinus, CDMultiply, CDDivide]
       components = [ Component op n | op <- ops, n <- nums ]
-      isValidStep c =
-        maybe False (> 0) (applyOp cur c)
+      isValidStep c = maybe False (> 0) (applyOp cur c)
   in  [ (c, M.fromMaybe 0 (applyOp cur c))
       | c <- components
       , isValidStep c
@@ -113,5 +119,50 @@ countdownFmtHelper (Just solution) =
 -- >>> countdownFmt [50, 101, 7, 6, 2, 10] 720
 -- "RPN => 0 50 + 101 + 7 - 10 * 2 / "
 countdownFmt :: [Int] -> Int -> [Char]
-countdownFmt nums des =
-  "RPN => 0 " ++ countdownFmtHelper (countdown nums des)
+countdownFmt nums des = "RPN => 0 " ++ countdownFmtHelper (countdown nums des)
+
+
+operatorChar :: CountdownOp -> Char
+operatorChar CDPlus     = '+'
+operatorChar CDMinus    = '-'
+operatorChar CDMultiply = '*'
+operatorChar CDDivide   = '/'
+
+componentOpChar :: Component -> [Char]
+componentOpChar x = [operatorChar $ operator x]
+
+
+countdownInfixFmtHelper :: [Component] -> Maybe CountdownOp -> [Char]
+countdownInfixFmtHelper []  _ = ""
+countdownInfixFmtHelper [x] _ = show $ value x
+countdownInfixFmtHelper (x : xs) Nothing =
+  countdownInfixFmtHelper xs (Just $ operator x)
+    ++ " "
+    ++ (componentOpChar x)
+    ++ " "
+    ++ show (value x)
+countdownInfixFmtHelper (x : xs) (Just prevOp)
+  | (precedence (operator x)) >= (precedence prevOp)
+  = countdownInfixFmtHelper xs (Just $ operator x)
+    ++ " "
+    ++ componentOpChar x
+    ++ " "
+    ++ show (value x)
+  | otherwise
+  = "("
+    ++ countdownInfixFmtHelper xs (Just $ operator x)
+    ++ " "
+    ++ componentOpChar x
+    ++ " "
+    ++ show (value x)
+    ++ ")"
+
+
+countdownInfixFmt :: [Int] -> Int -> [Char]
+countdownInfixFmt nums des =
+  let solution = countdown nums des
+  in  maybe
+        "NO SOLUTION"
+        (\x -> show des ++ " = " ++ countdownInfixFmtHelper (reverse x) Nothing)
+        solution
+
