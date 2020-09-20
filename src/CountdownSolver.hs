@@ -1,4 +1,4 @@
-module Countdown
+module CountdownSolver
   ( CountdownOp
   , Component
   , countdown
@@ -138,11 +138,11 @@ countdownInfixFmtHelper [x] _ = show $ value x
 countdownInfixFmtHelper (x : xs) Nothing =
   countdownInfixFmtHelper xs (Just $ operator x)
     ++ " "
-    ++ (componentOpChar x)
+    ++ componentOpChar x
     ++ " "
     ++ show (value x)
 countdownInfixFmtHelper (x : xs) (Just prevOp)
-  | (precedence (operator x)) >= (precedence prevOp)
+  | precedence (operator x) >= precedence prevOp
   = countdownInfixFmtHelper xs (Just $ operator x)
     ++ " "
     ++ componentOpChar x

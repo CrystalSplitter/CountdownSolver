@@ -1,6 +1,6 @@
 module Main where
 
-import           Countdown                      ( countdownInfixFmt )
+import           CountdownSolver                ( countdownInfixFmt )
 import qualified System.Console.GetOpt         as GO
 import qualified System.Exit                   as E
 import           System.Environment
@@ -38,7 +38,7 @@ parse argv = case GO.getOpt GO.Permute flags argv of
     if Help `elem` fls
       then do
         hPutStrLn stderr usageInfo
-        E.exitWith E.ExitSuccess
+        E.exitSuccess
       else do
         return $ CountdownArgument { des  = read (head args)
                                    , nums = map read (tail args)
