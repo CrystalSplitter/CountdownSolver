@@ -25,8 +25,8 @@ usageInfo = GO.usageInfo (unlines [header, desc]) flags ++ "\n" ++ unlines
   desc     = "British gameshow mathematical solver."
   examples = map
     ("  " ++)
-    [ "$ countdown 666 52 1 8 27 6 33"
-    , "666 = (52 + 27 + 33 - 1) * 6"
+    [ "$ countdown 666 25 3 8 1 7 4"
+    , "666 = ((25 + 8) * 3 - 4) * 7 + 1"
     , ""
     , "$ countdown 420 69 700 7 28 3 14"
     , "420 = (69 + 28 - 7) * 14 / 3"

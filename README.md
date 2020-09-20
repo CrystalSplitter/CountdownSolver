@@ -18,9 +18,18 @@ This program solves this problem using a lazily-evaluated Depth First Search.
 
 
 Usage:
-```bash
-$ countdown '[25,3,8,1,7,4]' 666
-RPN => 0 25 + 8 + 3 * 4 - 7 * 1 +
 ```
+Usage: countdown [-h] DES NUM [NUM ...]
+British gameshow mathematical solver.
 
-Note that the output is in Reverse Polish Notation (for my own convenience), and leads with an addition to zero.
+  -h  --help  Print this help message
+  -r  --rpn   Return output in Reverse Polish Notation
+
+Examples:
+
+  $ countdown 666 25 3 8 1 7 4
+  666 = ((25 + 8) * 3 - 4) * 7 + 1
+  
+  $ countdown 420 69 700 7 28 3 14
+  420 = (69 + 28 - 7) * 14 / 3
+```
